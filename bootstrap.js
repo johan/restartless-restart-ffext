@@ -18,10 +18,14 @@ function main(win) {
   restartMI.addEventListener("command", restart, true);
   fileMenu.insertBefore(restartMI, quitMI);
 
-  let len = cleanupAry.push(function() fileMenu.removeChild(restartMI));
-  win.addEventListener("unload", function() {
-    cleanupAry[len - 1] = null;
-  }, false);
+  let idx1 = cleanupAry.push(function() fileMenu.removeChild(restartMI)) - 1;
+  let idx2 = cleanupAry.push(function() (
+      win.removeEventListener("unload", winUnloader, false))) - 1;
+  function winUnloader() {
+    cleanupAry[idx1] = null;
+    cleanupAry[idx2] = null;
+  }
+  win.addEventListener("unload", winUnloader, false);
 }
 
 function findWindowsAndRun(aFunc) {
