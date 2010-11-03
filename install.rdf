@@ -8,6 +8,8 @@
     <version>1</version>
     <bootstrap>true</bootstrap>
     <type>2</type>
+    <homepageURL>http://github.com/erikvold/restartless-restart-ffext</homepageURL>
+    <iconURL>http://picol.org/images/icons/files/png/32/refresh_32.png</iconURL>
 
     <targetApplication>
       <r:Description>
