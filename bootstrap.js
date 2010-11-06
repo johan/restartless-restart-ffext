@@ -29,9 +29,9 @@ function main(win) {
   win.addEventListener("unload", winUnloader, false);
 }
 
-function findWindowsAndRun(aFunc) {
+function startup() {
   let browserWins = Services.wm.getEnumerator("navigator:browser");
-  while (browserWins.hasMoreElements()) aFunc(browserWins.getNext());
+  while (browserWins.hasMoreElements()) main(browserWins.getNext());
 
   function winObs(aSubject, aTopic) {
     if ("domwindowopened" != aTopic) return;
@@ -39,15 +39,13 @@ function findWindowsAndRun(aFunc) {
       aSubject.removeEventListener("load", winLoad, false);
       if ("navigator:browser" ==
           aSubject.document.documentElement.getAttribute("windowtype"))
-        aFunc(aSubject);
+        main(aSubject);
     }
     aSubject.addEventListener("load", winLoad, false);
   }
   Services.ww.registerNotification(winObs);
   cleanupAry.push(function() Services.ww.unregisterNotification(winObs));
 }
-
-function startup() findWindowsAndRun(main);
 function shutdown() {
   for (let [, cleaner] in Iterator(cleanupAry)) cleaner && cleaner();
 }
