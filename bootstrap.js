@@ -28,8 +28,7 @@ function main(win) {
   restartMI.setAttribute("key", "RR:Restart");
   restartMI.addEventListener("command", restart, true);
   let fileMenu = doc.getElementById("menu_FilePopup");
-  let quitMI = doc.getElementById("menu_FileQuitItem");
-  fileMenu.insertBefore(restartMI, quitMI);
+  fileMenu.insertBefore(restartMI, doc.getElementById("menu_FileQuitItem"));
 
   let idx1 = cleanupAry.push(function() {
     mainKS.removeChild(restartKey);
