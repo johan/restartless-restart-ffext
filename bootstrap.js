@@ -39,7 +39,7 @@ function main(win) {
   restartAMI.setAttribute("class", "menuitem-iconic menuitem-iconic-tooltip");
   restartAMI.style.MozImageRegion = "rect(0, 28px, 14px, 14px)";
   restartAMI.style.listStyleImage =
-      "url('chrome://browser/skin/reload-stop-go.png')";
+      "url('http://picol.org/images/icons/files/png/16/refresh_16.png')";
   restartAMI.addEventListener("command", restart, true);
   let appMenu = doc.getElementById("appmenuPrimaryPane");
   appMenu.insertBefore(restartAMI, doc.getElementById("appmenu-quit"));
