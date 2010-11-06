@@ -33,11 +33,8 @@ function main(win) {
   // add app (Firefox button) menu item
   let appMenu = doc.getElementById("appmenuPrimaryPane"), restartAMI;
   if (appMenu) {
-    restartAMI = doc.createElement("menuitem");
+    restartAMI = restartMI.cloneNode(false);
     restartAMI.setAttribute("id", "appmenu_RestartItem");
-    restartAMI.setAttribute("label", "Restart");
-    restartAMI.setAttribute("accesskey", "R");
-    restartAMI.setAttribute("key", "RR:Restart");
     restartAMI.setAttribute("class", "menuitem-iconic menuitem-iconic-tooltip");
     restartAMI.style.listStyleImage =
         "url('http://picol.org/images/icons/files/png/16/refresh_16.png')";
