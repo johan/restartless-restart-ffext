@@ -9,16 +9,32 @@ function restart() (
 
 function main(win) {
   let doc = win.document;
+
+  // add hotkey
+  let restartKey = doc.createElement("key");
+  restartKey.setAttribute("id", "RR:Restart");
+  restartKey.setAttribute("key", "R");
+  restartKey.setAttribute("modifiers", "accel,alt");
+  restartKey.setAttribute("oncommand", "void(0);");
+  restartKey.addEventListener("command", restart, true);
+  let mainKS = doc.getElementById("mainKeyset");
+  mainKS.appendChild(restartKey);
+
+  // add menu item
   let restartMI = doc.createElement("menuitem");
-  let fileMenu = doc.getElementById("menu_FilePopup");
-  let quitMI = doc.getElementById("menu_FileQuitItem");
   restartMI.setAttribute("id", "menu_FileRestartItem");
   restartMI.setAttribute("label", "Restart");
   restartMI.setAttribute("accesskey", "R");
+  restartMI.setAttribute("key", "RR:Restart");
   restartMI.addEventListener("command", restart, true);
+  let fileMenu = doc.getElementById("menu_FilePopup");
+  let quitMI = doc.getElementById("menu_FileQuitItem");
   fileMenu.insertBefore(restartMI, quitMI);
 
-  let idx1 = cleanupAry.push(function() fileMenu.removeChild(restartMI)) - 1;
+  let idx1 = cleanupAry.push(function() {
+    mainKS.removeChild(restartKey);
+    fileMenu.removeChild(restartMI);
+  }) - 1;
   let idx2 = cleanupAry.push(function() (
       win.removeEventListener("unload", winUnloader, false))) - 1;
   function winUnloader() {
