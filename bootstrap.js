@@ -15,6 +15,7 @@ function main(win) {
   let quitMI = doc.getElementById("menu_FileQuitItem");
   restartMI.setAttribute("id", "menu_FileRestartItem");
   restartMI.setAttribute("label", "Restart");
+  restartMI.setAttribute("accesskey", "R");
   restartMI.addEventListener("command", restart, true);
   fileMenu.insertBefore(restartMI, quitMI);
 
