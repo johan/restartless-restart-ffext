@@ -31,22 +31,24 @@ function main(win) {
   fileMenu.insertBefore(restartMI, doc.getElementById("menu_FileQuitItem"));
   
   // add app (Firefox button) menu item
-  let restartAMI = doc.createElement("menuitem");
-  restartAMI.setAttribute("id", "appmenu_RestartItem");
-  restartAMI.setAttribute("label", "Restart");
-  restartAMI.setAttribute("accesskey", "R");
-  restartAMI.setAttribute("key", "RR:Restart");
-  restartAMI.setAttribute("class", "menuitem-iconic menuitem-iconic-tooltip");
-  restartAMI.style.listStyleImage =
-      "url('http://picol.org/images/icons/files/png/16/refresh_16.png')";
-  restartAMI.addEventListener("command", restart, true);
-  let appMenu = doc.getElementById("appmenuPrimaryPane");
-  appMenu.insertBefore(restartAMI, doc.getElementById("appmenu-quit"));
+  let appMenu = doc.getElementById("appmenuPrimaryPane"), restartAMI;
+  if (appMenu) {
+    restartAMI = doc.createElement("menuitem");
+    restartAMI.setAttribute("id", "appmenu_RestartItem");
+    restartAMI.setAttribute("label", "Restart");
+    restartAMI.setAttribute("accesskey", "R");
+    restartAMI.setAttribute("key", "RR:Restart");
+    restartAMI.setAttribute("class", "menuitem-iconic menuitem-iconic-tooltip");
+    restartAMI.style.listStyleImage =
+        "url('http://picol.org/images/icons/files/png/16/refresh_16.png')";
+    restartAMI.addEventListener("command", restart, true);
+    appMenu.insertBefore(restartAMI, doc.getElementById("appmenu-quit"));
+  }
 
   let idx1 = cleanupAry.push(function() {
     mainKS.removeChild(restartKey);
     fileMenu.removeChild(restartMI);
-    appMenu.removeChild(restartAMI);
+    appMenu && appMenu.removeChild(restartAMI);
   }) - 1;
   let idx2 = cleanupAry.push(function() (
       win.removeEventListener("unload", winUnloader, false))) - 1;
