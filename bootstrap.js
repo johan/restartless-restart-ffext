@@ -20,7 +20,7 @@ function main(win) {
   let mainKS = doc.getElementById("mainKeyset");
   mainKS.appendChild(restartKey);
 
-  // add menu item
+  // add menu bar item
   let restartMI = doc.createElement("menuitem");
   restartMI.setAttribute("id", "menu_FileRestartItem");
   restartMI.setAttribute("label", "Restart");
@@ -29,10 +29,21 @@ function main(win) {
   restartMI.addEventListener("command", restart, true);
   let fileMenu = doc.getElementById("menu_FilePopup");
   fileMenu.insertBefore(restartMI, doc.getElementById("menu_FileQuitItem"));
+  
+  // add app (Firefox button) menu item
+  let restartAMI = doc.createElement("menuitem");
+  restartAMI.setAttribute("id", "appmenu_RestartItem");
+  restartAMI.setAttribute("label", "Restart");
+  restartAMI.setAttribute("accesskey", "R");
+  restartAMI.setAttribute("key", "RR:Restart");
+  restartAMI.addEventListener("command", restart, true);
+  let appMenu = doc.getElementById("appmenuPrimaryPane");
+  appMenu.insertBefore(restartAMI, doc.getElementById("appmenu-quit"));
 
   let idx1 = cleanupAry.push(function() {
     mainKS.removeChild(restartKey);
     fileMenu.removeChild(restartMI);
+    appMenu.removeChild(restartAMI);
   }) - 1;
   let idx2 = cleanupAry.push(function() (
       win.removeEventListener("unload", winUnloader, false))) - 1;
