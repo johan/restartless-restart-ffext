@@ -1,6 +1,7 @@
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 
+const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 let cleanupAry = [];
 
 function restart() (
@@ -12,7 +13,7 @@ function main(win) {
   function $(id) doc.getElementById(id);
 
   // add hotkey
-  let restartKey = doc.createElement("key");
+  let restartKey = doc.createElementNS(NS_XUL, "key");
   restartKey.setAttribute("id", "RR:Restart");
   restartKey.setAttribute("key", "R");
   restartKey.setAttribute("modifiers", "accel,alt");
@@ -22,7 +23,7 @@ function main(win) {
   mainKS.appendChild(restartKey);
 
   // add menu bar item to File menu
-  let restartMI = doc.createElement("menuitem");
+  let restartMI = doc.createElementNS(NS_XUL, "menuitem");
   restartMI.setAttribute("id", "menu_FileRestartItem");
   restartMI.setAttribute("label", "Restart");
   restartMI.setAttribute("accesskey", "R");
