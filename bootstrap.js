@@ -56,6 +56,7 @@ function main(win) {
   win.addEventListener("unload", winUnloader, false);
 }
 
+let install = uninstall = function install(){};
 function startup() {
   let browserWins = Services.wm.getEnumerator("navigator:browser");
   while (browserWins.hasMoreElements()) main(browserWins.getNext());
