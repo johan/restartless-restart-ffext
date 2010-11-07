@@ -20,7 +20,7 @@ function main(win) {
   let mainKS = doc.getElementById("mainKeyset");
   mainKS.appendChild(restartKey);
 
-  // add menu item
+  // add menu bar item
   let restartMI = doc.createElement("menuitem");
   restartMI.setAttribute("id", "menu_FileRestartItem");
   restartMI.setAttribute("label", "Restart");
@@ -29,10 +29,23 @@ function main(win) {
   restartMI.addEventListener("command", restart, true);
   let fileMenu = doc.getElementById("menu_FilePopup");
   fileMenu.insertBefore(restartMI, doc.getElementById("menu_FileQuitItem"));
+  
+  // add app (Firefox button) menu item
+  let appMenu = doc.getElementById("appmenuPrimaryPane"), restartAMI;
+  if (appMenu) {
+    restartAMI = restartMI.cloneNode(false);
+    restartAMI.setAttribute("id", "appmenu_RestartItem");
+    restartAMI.setAttribute("class", "menuitem-iconic menuitem-iconic-tooltip");
+    restartAMI.style.listStyleImage =
+        "url('http://picol.org/images/icons/files/png/16/refresh_16.png')";
+    restartAMI.addEventListener("command", restart, true);
+    appMenu.insertBefore(restartAMI, doc.getElementById("appmenu-quit"));
+  }
 
   let idx1 = cleanupAry.push(function() {
     mainKS.removeChild(restartKey);
     fileMenu.removeChild(restartMI);
+    appMenu && appMenu.removeChild(restartAMI);
   }) - 1;
   let idx2 = cleanupAry.push(function() (
       win.removeEventListener("unload", winUnloader, false))) - 1;
