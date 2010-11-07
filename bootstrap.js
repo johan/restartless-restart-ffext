@@ -31,7 +31,7 @@ function main(win) {
   restartMI.addEventListener("command", restart, true);
   let fileMenu = $("menu_FilePopup");
   fileMenu.insertBefore(restartMI, $("menu_FileQuitItem"));
-  
+
   // add app menu item to Firefox button for Windows 7
   let appMenu = $("appmenuPrimaryPane"), restartAMI;
   if (appMenu) {
