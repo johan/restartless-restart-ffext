@@ -21,7 +21,7 @@ function main(win) {
   let mainKS = $("mainKeyset");
   mainKS.appendChild(restartKey);
 
-  // add menu bar item
+  // add menu bar item to File menu
   let restartMI = doc.createElement("menuitem");
   restartMI.setAttribute("id", "menu_FileRestartItem");
   restartMI.setAttribute("label", "Restart");
@@ -31,7 +31,7 @@ function main(win) {
   let fileMenu = $("menu_FilePopup");
   fileMenu.insertBefore(restartMI, $("menu_FileQuitItem"));
   
-  // add app (Firefox button) menu item
+  // add app menu item to Firefox button for Windows 7
   let appMenu = $("appmenuPrimaryPane"), restartAMI;
   if (appMenu) {
     restartAMI = restartMI.cloneNode(false);
