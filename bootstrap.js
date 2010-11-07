@@ -9,6 +9,7 @@ function restart() (
 
 function main(win) {
   let doc = win.document;
+  function $(id) doc.getElementById(id);
 
   // add hotkey
   let restartKey = doc.createElement("key");
@@ -17,7 +18,7 @@ function main(win) {
   restartKey.setAttribute("modifiers", "accel,alt");
   restartKey.setAttribute("oncommand", "void(0);");
   restartKey.addEventListener("command", restart, true);
-  let mainKS = doc.getElementById("mainKeyset");
+  let mainKS = $("mainKeyset");
   mainKS.appendChild(restartKey);
 
   // add menu bar item
@@ -27,11 +28,11 @@ function main(win) {
   restartMI.setAttribute("accesskey", "R");
   restartMI.setAttribute("key", "RR:Restart");
   restartMI.addEventListener("command", restart, true);
-  let fileMenu = doc.getElementById("menu_FilePopup");
-  fileMenu.insertBefore(restartMI, doc.getElementById("menu_FileQuitItem"));
+  let fileMenu = $("menu_FilePopup");
+  fileMenu.insertBefore(restartMI, $("menu_FileQuitItem"));
   
   // add app (Firefox button) menu item
-  let appMenu = doc.getElementById("appmenuPrimaryPane"), restartAMI;
+  let appMenu = $("appmenuPrimaryPane"), restartAMI;
   if (appMenu) {
     restartAMI = restartMI.cloneNode(false);
     restartAMI.setAttribute("id", "appmenu_RestartItem");
@@ -39,7 +40,7 @@ function main(win) {
     restartAMI.style.listStyleImage =
         "url('http://picol.org/images/icons/files/png/16/refresh_16.png')";
     restartAMI.addEventListener("command", restart, true);
-    appMenu.insertBefore(restartAMI, doc.getElementById("appmenu-quit"));
+    appMenu.insertBefore(restartAMI, $("appmenu-quit"));
   }
 
   let idx1 = cleanupAry.push(function() {
