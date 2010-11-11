@@ -77,6 +77,7 @@ function startup() {
   Services.ww.registerNotification(winObs);
   cleanupAry.push(function() Services.ww.unregisterNotification(winObs));
 }
-function shutdown() {
-  for (let [, cleaner] in Iterator(cleanupAry)) cleaner && cleaner();
+function shutdown(data, reason) {
+  if (reason !== APP_SHUTDOWN)
+    for (let [, cleaner] in Iterator(cleanupAry)) cleaner && cleaner();
 }
