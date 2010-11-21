@@ -1,8 +1,20 @@
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 
-const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
+const PREFS = {
+  key: "R",
+  modifiers: "accel,alt"
+};
 let cleanupAry = [];
+
+function getPref(aName) {
+  try {
+    return PREF_BRANCH.getComplexValue(aName, Ci.nsISupportsString).data;
+  } catch(e) {}
+  return PREFS[aName];
+}
 
 function restart() (
     Cc['@mozilla.org/toolkit/app-startup;1'].getService(Ci.nsIAppStartup)
@@ -15,8 +27,8 @@ function main(win) {
   // add hotkey
   let restartKey = doc.createElementNS(NS_XUL, "key");
   restartKey.setAttribute("id", "RR:Restart");
-  restartKey.setAttribute("key", "R");
-  restartKey.setAttribute("modifiers", "accel,alt");
+  restartKey.setAttribute("key", getPref("key"));
+  restartKey.setAttribute("modifiers", getPref("modifiers"));
   restartKey.setAttribute("oncommand", "void(0);");
   restartKey.addEventListener("command", restart, true);
   let mainKS = $("mainKeyset");
