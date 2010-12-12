@@ -49,9 +49,17 @@ function getPref(aName) {
   return PREFS[aName];
 }
 
-function restart() (
-    Cc['@mozilla.org/toolkit/app-startup;1'].getService(Ci.nsIAppStartup)
-        .quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart));
+function restart() {
+  let stopIt = Cc["@mozilla.org/supports-PRBool;1"]
+      .createInstance(Ci.nsISupportsPRBool);
+  Services.obs.notifyObservers(stopIt, "quit-application-requested", "restart");
+  if (stopIt.data)
+    return Services.prompt.alert(
+        null, "Restartless Restart", "Something denied the restart request.");
+
+  Cc['@mozilla.org/toolkit/app-startup;1'].getService(Ci.nsIAppStartup)
+      .quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+}
 
 function main(win) {
   let doc = win.document;
