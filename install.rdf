@@ -9,7 +9,7 @@
     <bootstrap>true</bootstrap>
     <type>2</type>
     <homepageURL>http://github.com/erikvold/restartless-restart-ffext</homepageURL>
-    <iconURL>http://picol.org/images/icons/files/png/32/refresh_32.png</iconURL>
+    <iconURL>https://addons.mozilla.org/en-US/firefox/images/addon_icon/249342</iconURL>
 
     <contributor>Greg Parris; http://phob.net/</contributor>
 

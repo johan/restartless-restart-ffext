@@ -8,6 +8,7 @@ const PREFS = {
   modifiers: "accel,alt"
 };
 let cleanupAry = [];
+let logo = "http://picol.org/images/icons/files/png/16/refresh_16.png";
 
 function getPref(aName) {
   try {
@@ -50,8 +51,7 @@ function main(win) {
     restartAMI = restartMI.cloneNode(false);
     restartAMI.setAttribute("id", "appmenu_RestartItem");
     restartAMI.setAttribute("class", "menuitem-iconic menuitem-iconic-tooltip");
-    restartAMI.style.listStyleImage =
-        "url('http://picol.org/images/icons/files/png/16/refresh_16.png')";
+    restartAMI.style.listStyleImage = "url('" + logo + "')";
     restartAMI.addEventListener("command", restart, true);
     appMenu.insertBefore(restartAMI, $("appmenu-quit"));
   }
@@ -72,7 +72,9 @@ function main(win) {
 
 function install(){}
 function uninstall(){}
-function startup() {
+function startup(data) {
+  logo = Services.io.newFileURI(data.installPath).spec + "images/refresh_16.png";
+
   let browserWins = Services.wm.getEnumerator("navigator:browser");
   while (browserWins.hasMoreElements()) main(browserWins.getNext());
 
