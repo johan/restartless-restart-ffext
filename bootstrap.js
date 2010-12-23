@@ -1,5 +1,7 @@
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+const global = this;
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
@@ -7,8 +9,7 @@ const PREFS = {
   key: "R",
   modifiers: "accel,alt"
 };
-let cleanupAry = [];
-let logo = "http://picol.org/images/icons/files/png/16/refresh_16.png";
+let logo = "";
 
 function getPref(aName) {
   try {
@@ -56,42 +57,18 @@ function main(win) {
     appMenu.insertBefore(restartAMI, $("appmenu-quit"));
   }
 
-  let idx1 = cleanupAry.push(function() {
+  unload(function() {
     mainKS.removeChild(restartKey);
     fileMenu.removeChild(restartMI);
     appMenu && appMenu.removeChild(restartAMI);
-  }) - 1;
-  let idx2 = cleanupAry.push(function() (
-      win.removeEventListener("unload", winUnloader, false))) - 1;
-  function winUnloader() {
-    cleanupAry[idx1] = null;
-    cleanupAry[idx2] = null;
-  }
-  win.addEventListener("unload", winUnloader, false);
+  }, win);
 }
 
 function install(){}
 function uninstall(){}
-function startup(data) {
-  logo = Services.io.newFileURI(data.installPath).spec + "images/refresh_16.png";
-
-  let browserWins = Services.wm.getEnumerator("navigator:browser");
-  while (browserWins.hasMoreElements()) main(browserWins.getNext());
-
-  function winObs(aSubject, aTopic) {
-    if ("domwindowopened" != aTopic) return;
-    let winLoad = function() {
-      aSubject.removeEventListener("load", winLoad, false);
-      if ("navigator:browser" ==
-          aSubject.document.documentElement.getAttribute("windowtype"))
-        main(aSubject);
-    }
-    aSubject.addEventListener("load", winLoad, false);
-  }
-  Services.ww.registerNotification(winObs);
-  cleanupAry.push(function() Services.ww.unregisterNotification(winObs));
-}
-function shutdown(data, reason) {
-  if (reason !== APP_SHUTDOWN)
-    for (let [, cleaner] in Iterator(cleanupAry)) cleaner && cleaner();
-}
+function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
+  Services.scriptloader.loadSubScript(addon.getResourceURI("includes/utils.js").spec, global);
+  logo = addon.getResourceURI("images/refresh_16.png").spec;
+  watchWindows(main);
+});
+function shutdown(data, reason) { if (reason !== APP_SHUTDOWN) unload(); }
