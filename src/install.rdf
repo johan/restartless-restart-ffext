@@ -5,7 +5,7 @@
     <creator>Erik Vold</creator>
     <id>restartless.restart@erikvold.com</id>
     <name>Restartless Restart</name>
-    <version>3</version>
+    <version>4pre</version>
     <bootstrap>true</bootstrap>
     <type>2</type>
     <homepageURL>http://github.com/erikvold/restartless-restart-ffext</homepageURL>
