@@ -1,5 +1,4 @@
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
-const global = this;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
 
@@ -10,6 +9,9 @@ const PREFS = {
   modifiers: "accel,alt"
 };
 let logo = "";
+
+(function(global) global.include = function include(src) (
+    Services.scriptloader.loadSubScript(src, global)))(this);
 
 function getPref(aName) {
   try {
@@ -67,7 +69,7 @@ function main(win) {
 function install(){}
 function uninstall(){}
 function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
-  Services.scriptloader.loadSubScript(addon.getResourceURI("includes/utils.js").spec, global);
+  include(addon.getResourceURI("includes/utils.js").spec);
   logo = addon.getResourceURI("images/refresh_16.png").spec;
   watchWindows(main);
 });
