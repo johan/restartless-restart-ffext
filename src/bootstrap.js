@@ -49,9 +49,8 @@ function getPref(aName) {
   return PREFS[aName];
 }
 
-function restart() (
-    Cc['@mozilla.org/toolkit/app-startup;1'].getService(Ci.nsIAppStartup)
-        .quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart));
+function restart() (Cc["@mozilla.org/fuel/application;1"]
+    .getService(Ci.fuelIApplication).restart());
 
 function main(win) {
   let doc = win.document;
