@@ -24,10 +24,12 @@
  * Contributor(s):
  *   Erik Vold <erikvvold@gmail.com> (Original Author)
  *   Greg Parris <greg.parris@gmail.com>
+ *   Nils Maier <maierman@web.de>
  *
  * ***** END LICENSE BLOCK ***** */
 
-const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+const {classes: Cc, interfaces: Ci, utils: Cu, Constructor: ctor} = Components;
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
 
@@ -37,6 +39,19 @@ const PREFS = {
   key: "R",
   modifiers: "accel,alt"
 };
+const RESTART_FLAGS = Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart;
+const RESTART_ACTION = "restart";
+
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "AppStartup",
+  "@mozilla.org/toolkit/app-startup;1",
+  "nsIAppStartup");
+
+const SupportsBool = ctor(
+  "@mozilla.org/supports-PRBool;1",
+  "nsISupportsPRBool");
+
 let logo = "";
 
 (function(global) global.include = function include(src) (
@@ -49,8 +64,28 @@ function getPref(aName) {
   return PREFS[aName];
 }
 
-function restart() (Cc["@mozilla.org/fuel/application;1"]
-    .getService(Ci.fuelIApplication).restart());
+function restart() {
+  // Application shutdown sequence
+  // First ask observers if a restart is fine with them
+  let canceled = new SupportsBool();
+  Services.obs.notifyObservers(
+    canceled,
+    "quit-application-requested",
+    RESTART_ACTION);
+  if (canceled.data)
+    return false; // somebody canceled our quit request
+
+  // Then notify observers that the quit/restart is happening
+  Services.obs.notifyObservers(
+    null,
+    "quit-application-granted",
+    RESTART_ACTION);
+
+  // Finally restart
+  AppStartup.quit(RESTART_FLAGS);
+
+  return true;
+}
 
 function main(win) {
   let doc = win.document;
