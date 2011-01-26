@@ -75,13 +75,9 @@ function restart() {
   if (canceled.data)
     return false; // somebody canceled our quit request
 
-  // Then notify observers that the quit/restart is happening
-  Services.obs.notifyObservers(
-    null,
-    "quit-application-granted",
-    RESTART_ACTION);
-
   // Finally restart
+	// No need to notify observers about quit-application granted, nsAppStartup
+	// does that for us
   AppStartup.quit(RESTART_FLAGS);
 
   return true;
