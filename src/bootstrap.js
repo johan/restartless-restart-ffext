@@ -24,6 +24,7 @@
  * Contributor(s):
  *   Erik Vold <erikvvold@gmail.com> (Original Author)
  *   Greg Parris <greg.parris@gmail.com>
+ *   Nils Maier <maierman@web.de>
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -37,6 +38,7 @@ const PREFS = {
   key: "R",
   modifiers: "accel,alt"
 };
+
 let logo = "";
 
 (function(global) global.include = function include(src) (
@@ -49,8 +51,19 @@ function getPref(aName) {
   return PREFS[aName];
 }
 
-function restart() (Cc["@mozilla.org/fuel/application;1"]
-    .getService(Ci.fuelIApplication).restart());
+function restart() {
+  let canceled = Cc["@mozilla.org/supports-PRBool;1"]
+      .createInstance(Ci.nsISupportsPRBool);
+
+  Services.obs.notifyObservers(canceled, "quit-application-requested", "restart");
+
+  if (canceled.data) return false; // somebody canceled our quit request
+
+  Cc['@mozilla.org/toolkit/app-startup;1'].getService(Ci.nsIAppStartup)
+      .quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+
+  return true;
+}
 
 function main(win) {
   let doc = win.document;
