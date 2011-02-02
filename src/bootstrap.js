@@ -42,7 +42,10 @@ let PREF_OBSERVER = {
   observe: function(aSubject, aTopic, aData) {
     if ("nsPref:changed" != aTopic || !PREFS[aData]) return;
     runOnWindows(function(win) {
-      win.document.getElementById("RR:Restart").setAttribute(aData, getPref(aData));
+      var doc = win.document;
+      function $(id) doc.getElementById(id);
+      $("RR:Restart").setAttribute(aData, getPref(aData));
+      addMenuItem(doc, $);
     });
   }
 }
@@ -57,6 +60,22 @@ function getPref(aName) {
     return PREF_BRANCH.getComplexValue(aName, Ci.nsISupportsString).data;
   } catch(e) {}
   return PREFS[aName];
+}
+
+function addMenuItem(doc, $) {
+  var menuitem = $("menu_FileRestartItem");
+  if (menuitem)
+    menuitem.parentNode.removeChild(menuitem);
+
+  // add menu bar item to File menu
+  let restartMI = doc.createElementNS(NS_XUL, "menuitem");
+  restartMI.setAttribute("id", "menu_FileRestartItem");
+  restartMI.setAttribute("label", "Restart");
+  restartMI.setAttribute("accesskey", "R");
+  restartMI.setAttribute("key", "RR:Restart");
+  restartMI.addEventListener("command", restart, true);
+  let fileMenu = $("menu_FilePopup");
+  fileMenu.insertBefore(restartMI, $("menu_FileQuitItem"));
 }
 
 function restart() {
@@ -88,14 +107,7 @@ function main(win) {
   mainKS.appendChild(restartKey);
 
   // add menu bar item to File menu
-  let restartMI = doc.createElementNS(NS_XUL, "menuitem");
-  restartMI.setAttribute("id", "menu_FileRestartItem");
-  restartMI.setAttribute("label", "Restart");
-  restartMI.setAttribute("accesskey", "R");
-  restartMI.setAttribute("key", "RR:Restart");
-  restartMI.addEventListener("command", restart, true);
-  let fileMenu = $("menu_FilePopup");
-  fileMenu.insertBefore(restartMI, $("menu_FileQuitItem"));
+  addMenuItem(doc, $);
 
   // add app menu item to Firefox button for Windows 7
   let appMenu = $("appmenuPrimaryPane"), restartAMI;
