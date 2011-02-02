@@ -33,6 +33,9 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+const keyID = "RR:Restart";
+const fileMenuitemID = "menu_FileRestartItem";
+
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
 const PREFS = {
   key: "R",
@@ -42,10 +45,8 @@ let PREF_OBSERVER = {
   observe: function(aSubject, aTopic, aData) {
     if ("nsPref:changed" != aTopic || !PREFS[aData]) return;
     runOnWindows(function(win) {
-      var doc = win.document;
-      function $(id) doc.getElementById(id);
-      $("RR:Restart").setAttribute(aData, getPref(aData));
-      addMenuItem(doc, $);
+      win.document.getElementById(keyID).setAttribute(aData, getPref(aData));
+      addMenuItem(win);
     });
   }
 }
@@ -62,20 +63,27 @@ function getPref(aName) {
   return PREFS[aName];
 }
 
-function addMenuItem(doc, $) {
-  var menuitem = $("menu_FileRestartItem");
-  if (menuitem)
-    menuitem.parentNode.removeChild(menuitem);
+function addMenuItem(win) {
+  var $ = function(id) win.document.getElementById(id);
 
-  // add menu bar item to File menu
-  let restartMI = doc.createElementNS(NS_XUL, "menuitem");
-  restartMI.setAttribute("id", "menu_FileRestartItem");
-  restartMI.setAttribute("label", "Restart");
-  restartMI.setAttribute("accesskey", "R");
-  restartMI.setAttribute("key", "RR:Restart");
-  restartMI.addEventListener("command", restart, true);
-  let fileMenu = $("menu_FilePopup");
-  fileMenu.insertBefore(restartMI, $("menu_FileQuitItem"));
+  function removeMI() {
+    var menuitem = $(fileMenuitemID);
+    menuitem && menuitem.parentNode.removeChild(menuitem);
+  }
+  removeMI();
+
+  // add the new menuitem to File menu
+  let (restartMI = win.document.createElementNS(NS_XUL, "menuitem")) {
+    restartMI.setAttribute("id", fileMenuitemID);
+    restartMI.setAttribute("label", "Restart");
+    restartMI.setAttribute("accesskey", "R");
+    restartMI.setAttribute("key", keyID);
+    restartMI.addEventListener("command", restart, true);
+
+    $("menu_FilePopup").insertBefore(restartMI, $("menu_FileQuitItem"));
+  }
+
+  unload(removeMI, win);
 }
 
 function restart() {
@@ -97,17 +105,17 @@ function main(win) {
   function $(id) doc.getElementById(id);
 
   // add hotkey
-  let restartKey = doc.createElementNS(NS_XUL, "key");
-  restartKey.setAttribute("id", "RR:Restart");
-  restartKey.setAttribute("key", getPref("key"));
-  restartKey.setAttribute("modifiers", getPref("modifiers"));
-  restartKey.setAttribute("oncommand", "void(0);");
-  restartKey.addEventListener("command", restart, true);
-  let mainKS = $("mainKeyset");
-  mainKS.appendChild(restartKey);
+  let (restartKey = doc.createElementNS(NS_XUL, "key")) {
+    restartKey.setAttribute("id", keyID);
+    restartKey.setAttribute("key", getPref("key"));
+    restartKey.setAttribute("modifiers", getPref("modifiers"));
+    restartKey.setAttribute("oncommand", "void(0);");
+    restartKey.addEventListener("command", restart, true);
+    $("mainKeyset").appendChild(restartKey);
+  }
 
   // add menu bar item to File menu
-  addMenuItem(doc, $);
+  addMenuItem(win);
 
   // add app menu item to Firefox button for Windows 7
   let appMenu = $("appmenuPrimaryPane"), restartAMI;
@@ -121,8 +129,8 @@ function main(win) {
   }
 
   unload(function() {
-    mainKS.removeChild(restartKey);
-    fileMenu.removeChild(restartMI);
+    var key = $(keyID);
+    key && key.parentNode.removeChild(key);
     appMenu && appMenu.removeChild(restartAMI);
   }, win);
 }
