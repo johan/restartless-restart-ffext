@@ -41,6 +41,9 @@ const PREFS = {
 let PREF_OBSERVER = {
   observe: function(aSubject, aTopic, aData) {
     if ("nsPref:changed" != aTopic || !PREFS[aData]) return;
+    runOnWindows(function(win) {
+      win.document.getElementById("RR:Restart").setAttribute(aData, getPref(aData));
+    });
   }
 }
 
