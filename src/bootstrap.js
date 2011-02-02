@@ -38,6 +38,14 @@ const PREFS = {
   key: "R",
   modifiers: "accel,alt"
 };
+let PREF_OBSERVER = {
+  observe: function(aSubject, aTopic, aData) {
+    if ("nsPref:changed" != aTopic || !PREFS[aData]) return;
+    runOnWindows(function(win) {
+      win.document.getElementById("RR:Restart").setAttribute(aData, getPref(aData));
+    });
+  }
+}
 
 let logo = "";
 
@@ -110,8 +118,12 @@ function main(win) {
 function install(){}
 function uninstall(){}
 function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
+  var prefs = PREF_BRANCH;
   include(addon.getResourceURI("includes/utils.js").spec);
   logo = addon.getResourceURI("images/refresh_16.png").spec;
   watchWindows(main);
+  prefs = prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+  prefs.addObserver("", PREF_OBSERVER, false);
+  unload(function() prefs.removeObserver("", PREF_OBSERVER));
 });
 function shutdown(data, reason) { if (reason !== APP_SHUTDOWN) unload(); }
