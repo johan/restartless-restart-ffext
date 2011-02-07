@@ -120,7 +120,7 @@ function main(win) {
   // add app menu item to Firefox button for Windows 7
   let appMenu = $("appmenuPrimaryPane"), restartAMI;
   if (appMenu) {
-    restartAMI = restartMI.cloneNode(false);
+    restartAMI = $(fileMenuitemID).cloneNode(false);
     restartAMI.setAttribute("id", "appmenu_RestartItem");
     restartAMI.setAttribute("class", "menuitem-iconic menuitem-iconic-tooltip");
     restartAMI.style.listStyleImage = "url('" + logo + "')";
