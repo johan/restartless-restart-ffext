@@ -33,6 +33,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+const keysetID = "restartless-restart-keyset";
 const keyID = "RR:Restart";
 const fileMenuitemID = "menu_FileRestartItem";
 
@@ -104,6 +105,9 @@ function main(win) {
   let doc = win.document;
   function $(id) doc.getElementById(id);
 
+  let rrKeyset = doc.createElementNS(NS_XUL, "keyset");
+  rrKeyset.setAttribute("id", keysetID);
+
   // add hotkey
   let (restartKey = doc.createElementNS(NS_XUL, "key")) {
     restartKey.setAttribute("id", keyID);
@@ -111,7 +115,7 @@ function main(win) {
     restartKey.setAttribute("modifiers", getPref("modifiers"));
     restartKey.setAttribute("oncommand", "void(0);");
     restartKey.addEventListener("command", restart, true);
-    $("mainKeyset").appendChild(restartKey);
+    $("mainKeyset").parentNode.appendChild(rrKeyset).appendChild(restartKey);
   }
 
   // add menu bar item to File menu
@@ -129,8 +133,7 @@ function main(win) {
   }
 
   unload(function() {
-    var key = $(keyID);
-    key && key.parentNode.removeChild(key);
+    rrKeyset.parentNode.removeChild(rrKeyset);
     appMenu && appMenu.removeChild(restartAMI);
   }, win);
 }
