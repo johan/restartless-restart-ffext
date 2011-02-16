@@ -39,14 +39,24 @@ const fileMenuitemID = "menu_FileRestartItem";
 
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
 const PREFS = {
-  key: "R",
-  modifiers: "accel,alt"
+  get key() _("restart.ak", getPref("locale")),
+  modifiers: "accel,alt",
+  locale: undefined
 };
 let PREF_OBSERVER = {
   observe: function(aSubject, aTopic, aData) {
-    if ("nsPref:changed" != aTopic || !PREFS[aData]) return;
+    if ("nsPref:changed" != aTopic || !(aData in PREFS)) return;
     runOnWindows(function(win) {
-      win.document.getElementById(keyID).setAttribute(aData, getPref(aData));
+      switch (aData) {
+        case "locale":
+          win.document.getElementById(keyID)
+              .setAttribute("label", _("restart", getPref("locale")));
+          break;
+        default:
+          win.document.getElementById(keyID)
+              .setAttribute(aData, getPref(aData));
+          break;
+      }
       addMenuItem(win);
     });
   }
@@ -76,7 +86,7 @@ function addMenuItem(win) {
   // add the new menuitem to File menu
   let (restartMI = win.document.createElementNS(NS_XUL, "menuitem")) {
     restartMI.setAttribute("id", fileMenuitemID);
-    restartMI.setAttribute("label", "Restart");
+    restartMI.setAttribute("label", _("restart", getPref("locale")));
     restartMI.setAttribute("accesskey", "R");
     restartMI.setAttribute("key", keyID);
     restartMI.addEventListener("command", restart, true);
@@ -141,6 +151,9 @@ function main(win) {
 function install(){}
 function uninstall(){}
 function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
+  include(addon.getResourceURI("includes/l10n.js").spec);
+  l10n(addon);
+
   var prefs = PREF_BRANCH;
   include(addon.getResourceURI("includes/utils.js").spec);
   logo = addon.getResourceURI("images/refresh_16.png").spec;
