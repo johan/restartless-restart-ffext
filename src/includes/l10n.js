@@ -27,20 +27,20 @@
  * ***** END LICENSE BLOCK ***** */
 
 var l10n = (function(global) {
-  return function(addon) {
+  return function(addon, filename) {
     // get selected locale
     let locale = Cc["@mozilla.org/chrome/chrome-registry;1"]
         .getService(Ci.nsIXULChromeRegistry).getSelectedLocale("global");
 
     let defaultBundle = Services.strings.createBundle(
-        addon.getResourceURI("locale/" + locale + "/rr.properties").spec);
+        addon.getResourceURI("locale/" + locale + "/" + filename).spec);
     let engBundle = Services.strings.createBundle(
-        addon.getResourceURI("locale/en-US/rr.properties").spec);
+        addon.getResourceURI("locale/en-US/" + filename).spec);
 
     global._ = function l10n_underscore(aKey, aLocale) {
       if (aLocale)
         var localeBundle = Services.strings.createBundle(
-            addon.getResourceURI("locale/" + aLocale + "/rr.properties").spec);
+            addon.getResourceURI("locale/" + aLocale + "/" + filename).spec);
       try {
         return (localeBundle && localeBundle.GetStringFromName(aKey))
             || defaultBundle.GetStringFromName(aKey)

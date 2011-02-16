@@ -152,7 +152,7 @@ function install(){}
 function uninstall(){}
 function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
   include(addon.getResourceURI("includes/l10n.js").spec);
-  l10n(addon);
+  l10n(addon, "rr.properties");
 
   var prefs = PREF_BRANCH;
   include(addon.getResourceURI("includes/utils.js").spec);
