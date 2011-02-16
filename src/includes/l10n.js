@@ -37,7 +37,7 @@ var l10n = (function(global) {
     let engBundle = Services.strings.createBundle(
         addon.getResourceURI("locale/en-US/" + filename).spec);
 
-    global._ = function l10n_underscore(aKey, aLocale) {
+    return global._ = function l10n_underscore(aKey, aLocale) {
       if (aLocale)
         var localeBundle = Services.strings.createBundle(
             addon.getResourceURI("locale/" + aLocale + "/" + filename).spec);
