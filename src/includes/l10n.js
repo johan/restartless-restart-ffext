@@ -27,27 +27,54 @@
  * ***** END LICENSE BLOCK ***** */
 
 var l10n = (function(global) {
-  return function(addon, filename) {
-    // get selected locale
-    let locale = Cc["@mozilla.org/chrome/chrome-registry;1"]
-        .getService(Ci.nsIXULChromeRegistry).getSelectedLocale("global");
+  let splitter = /(\w+)-\w+/;
 
-    let defaultBundle = Services.strings.createBundle(
-        addon.getResourceURI("locale/" + locale + "/" + filename).spec);
-    let engBundle = Services.strings.createBundle(
-        addon.getResourceURI("locale/en-US/" + filename).spec);
+  // get user's locale
+  let locale = Cc["@mozilla.org/chrome/chrome-registry;1"]
+      .getService(Ci.nsIXULChromeRegistry).getSelectedLocale("global");
+
+  function getStr(aStrBundle, aKey) {
+    if (!aStrBundle) return false;
+    try {
+      return aStrBundle.GetStringFromName(aKey);
+    } catch (e) {}
+    return "";
+  }
+
+  return function(addon, filename, defaultLocale) {
+    defaultLocale = defaultLocale || "en";
+    function filepath(locale) addon
+        .getResourceURI("locale/" + locale + "/" + filename).spec
+
+    let defaultBundle = Services.strings.createBundle(filepath(locale));
+
+    let defaultBasicBundle;
+    let (locale_base = locale.match(splitter)) {
+      if (locale_base) {
+        defaultBasicBundle = Services.strings.createBundle(
+            filepath(locale_base[1]));
+      }
+    }
+
+    let addonsDefaultBundle =
+        Services.strings.createBundle(filepath(defaultLocale));
 
     return global._ = function l10n_underscore(aKey, aLocale) {
-      if (aLocale)
-        var localeBundle = Services.strings.createBundle(
-            addon.getResourceURI("locale/" + aLocale + "/" + filename).spec);
-      try {
-        return (localeBundle && localeBundle.GetStringFromName(aKey))
-            || defaultBundle.GetStringFromName(aKey)
-            || engBundle.GetStringFromName(aKey);
-      } catch (e) {
-        return engBundle.GetStringFromName(aKey);
+      let localeBundle, localeBasicBundle;
+      if (aLocale) {
+        localeBundle = Services.strings.createBundle(filepath(aLocale));
+
+        let locale_base = aLocale.match(splitter)
+        if (locale_base)
+          localeBasicBundle = Services.strings.createBundle(
+              filepath(locale_base[1]));
       }
+
+      return getStr(localeBundle, aKey)
+          || getStr(localeBasicBundle, aKey)
+          || (defaultBundle && (getStr(defaultBundle, aKey) || (defaultBundle = null)))
+          || (defaultBasicBundle && (getStr(defaultBasicBundle, aKey) || (defaultBasicBundle = null)))
+          || getStr(addonsDefaultBundle, aKey);
     }
   }
 })(this);
