@@ -37,6 +37,34 @@ const keysetID = "restartless-restart-keyset";
 const keyID = "RR:Restart";
 const fileMenuitemID = "menu_FileRestartItem";
 
+const XULAPPNAME = Cc["@mozilla.org/xre/app-info;1"]
+              .getService(Ci.nsIXULAppInfo)
+              .name;
+
+const  XUL_APP_SPECIFIC = {
+  get windowType() {
+    switch (XULAPPNAME) {
+      case "Thunderbird":
+        return "mail:3pane";
+        break;
+      default: //"Firefox", "SeaMonkey"
+        return "navigator:browser";
+        break;
+    }
+  }
+  
+  , get baseKeyset() {
+    switch (XULAPPNAME) {
+      case "Thunderbird":
+        return "mailKeys";
+        break;
+      default: //"Firefox", "SeaMonkey"
+        return "mainKeyset";
+        break;
+    }
+  }
+}
+
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
 const PREFS = {
   get key() _("restart.ak", getPref("locale")),
@@ -58,7 +86,7 @@ let PREF_OBSERVER = {
           break;
       }
       addMenuItem(win);
-    });
+    }, XUL_APP_SPECIFIC.windowType);
   }
 }
 
@@ -125,7 +153,7 @@ function main(win) {
     restartKey.setAttribute("modifiers", getPref("modifiers"));
     restartKey.setAttribute("oncommand", "void(0);");
     restartKey.addEventListener("command", restart, true);
-    $("mainKeyset").parentNode.appendChild(rrKeyset).appendChild(restartKey);
+    $(XUL_APP_SPECIFIC.baseKeyset).parentNode.appendChild(rrKeyset).appendChild(restartKey);
   }
 
   // add menu bar item to File menu
@@ -157,7 +185,7 @@ function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
   var prefs = PREF_BRANCH;
   include(addon.getResourceURI("includes/utils.js").spec);
   logo = addon.getResourceURI("images/refresh_16.png").spec;
-  watchWindows(main);
+  watchWindows(main, XUL_APP_SPECIFIC.windowType);
   prefs = prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
   prefs.addObserver("", PREF_OBSERVER, false);
   unload(function() prefs.removeObserver("", PREF_OBSERVER));
