@@ -37,32 +37,18 @@ const keysetID = "restartless-restart-keyset";
 const keyID = "RR:Restart";
 const fileMenuitemID = "menu_FileRestartItem";
 
-const XULAPPNAME = Cc["@mozilla.org/xre/app-info;1"]
-              .getService(Ci.nsIXULAppInfo)
-              .name;
-
-const  XUL_APP_SPECIFIC = {
-  get windowType() {
-    switch (XULAPPNAME) {
-      case "Thunderbird":
-        return "mail:3pane";
-        break;
-      default: //"Firefox", "SeaMonkey"
-        return "navigator:browser";
-        break;
-    }
-  }
-  
-  , get baseKeyset() {
-    switch (XULAPPNAME) {
-      case "Thunderbird":
-        return "mailKeys";
-        break;
-      default: //"Firefox", "SeaMonkey"
-        return "mainKeyset";
-        break;
-    }
-  }
+switch(Services.appinfo.name) {
+case "Thunderbird":
+  var XUL_APP_SPECIFIC = {
+    windowType: "mail:3pane",
+    baseKeyset: "mailKeys"
+  };
+  break;
+default: //"Firefox", "SeaMonkey"
+  var XUL_APP_SPECIFIC = {
+    windowType: "navigator:browser",
+    baseKeyset: "mainKeyset"
+  };
 }
 
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
