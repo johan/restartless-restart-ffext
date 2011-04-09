@@ -40,13 +40,13 @@ const fileMenuitemID = "menu_FileRestartItem";
 switch(Services.appinfo.name) {
 case "Thunderbird":
   var XUL_APP_SPECIFIC = {
-    windowType: "mail:3pane",
+    winType: "mail:3pane",
     baseKeyset: "mailKeys"
   };
   break;
 default: //"Firefox", "SeaMonkey"
   var XUL_APP_SPECIFIC = {
-    windowType: "navigator:browser",
+    winType: "navigator:browser",
     baseKeyset: "mainKeyset"
   };
 }
@@ -75,7 +75,7 @@ let PREF_OBSERVER = {
           break;
       }
       addMenuItem(win);
-    }, XUL_APP_SPECIFIC.windowType);
+    }, XUL_APP_SPECIFIC.winType);
   }
 }
 
@@ -124,12 +124,8 @@ function addMenuItem(win) {
 }
 
 function restart() {
-  let canceled = Cc["@mozilla.org/supports-PRBool;1"]
-      .createInstance(Ci.nsISupportsPRBool);
-
-  Services.obs.notifyObservers(canceled, "quit-application-requested", "restart");
-
-  if (canceled.data) return false; // somebody canceled our quit request
+  if (!Services.wm.getMostRecentWindow(XUL_APP_SPECIFIC.winType).canQuitApplication())
+    return false; // something aborted our quit request
 
   // disable fastload cache?
   if (getPref("disable_fastload")) Services.appinfo.invalidateCachesOnRestart();
@@ -189,7 +185,7 @@ function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
   unload(l10n.unload);
 
   logo = addon.getResourceURI("images/refresh_16.png").spec;
-  watchWindows(main, XUL_APP_SPECIFIC.windowType);
+  watchWindows(main, XUL_APP_SPECIFIC.winType);
   prefs = prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
   prefs.addObserver("", PREF_OBSERVER, false);
   unload(function() prefs.removeObserver("", PREF_OBSERVER));
