@@ -37,6 +37,20 @@ const keysetID = "restartless-restart-keyset";
 const keyID = "RR:Restart";
 const fileMenuitemID = "menu_FileRestartItem";
 
+switch(Services.appinfo.name) {
+case "Thunderbird":
+  var XUL_APP_SPECIFIC = {
+    windowType: "mail:3pane",
+    baseKeyset: "mailKeys"
+  };
+  break;
+default: //"Firefox", "SeaMonkey"
+  var XUL_APP_SPECIFIC = {
+    windowType: "navigator:browser",
+    baseKeyset: "mainKeyset"
+  };
+}
+
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
 // pref defaults
 const PREFS = {
@@ -61,7 +75,7 @@ let PREF_OBSERVER = {
           break;
       }
       addMenuItem(win);
-    });
+    }, XUL_APP_SPECIFIC.windowType);
   }
 }
 
@@ -141,7 +155,7 @@ function main(win) {
     restartKey.setAttribute("modifiers", getPref("modifiers"));
     restartKey.setAttribute("oncommand", "void(0);");
     restartKey.addEventListener("command", restart, true);
-    $("mainKeyset").parentNode.appendChild(rrKeyset).appendChild(restartKey);
+    $(XUL_APP_SPECIFIC.baseKeyset).parentNode.appendChild(rrKeyset).appendChild(restartKey);
   }
 
   // add menu bar item to File menu
@@ -175,7 +189,7 @@ function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
   unload(l10n.unload);
 
   logo = addon.getResourceURI("images/refresh_16.png").spec;
-  watchWindows(main);
+  watchWindows(main, XUL_APP_SPECIFIC.windowType);
   prefs = prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
   prefs.addObserver("", PREF_OBSERVER, false);
   unload(function() prefs.removeObserver("", PREF_OBSERVER));
