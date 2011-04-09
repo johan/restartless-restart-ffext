@@ -151,11 +151,13 @@ function main(win) {
 function install(){}
 function uninstall(){}
 function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
-  include(addon.getResourceURI("includes/l10n.js").spec);
-  l10n(addon, "rr.properties");
-
   var prefs = PREF_BRANCH;
+  include(addon.getResourceURI("includes/l10n.js").spec);
   include(addon.getResourceURI("includes/utils.js").spec);
+
+  l10n(addon, "rr.properties");
+  unload(l10n.unload);
+
   logo = addon.getResourceURI("images/refresh_16.png").spec;
   watchWindows(main);
   prefs = prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);

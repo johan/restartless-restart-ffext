@@ -41,7 +41,7 @@ var l10n = (function(global) {
     return "";
   }
 
-  return function(addon, filename, defaultLocale) {
+  function l10n(addon, filename, defaultLocale) {
     defaultLocale = defaultLocale || "en";
     function filepath(locale) addon
         .getResourceURI("locale/" + locale + "/" + filename).spec
@@ -77,4 +77,8 @@ var l10n = (function(global) {
           || getStr(addonsDefaultBundle, aKey);
     }
   }
+
+  l10n.unload = Services.strings.flushBundles;
+
+  return l10n;
 })(this);
