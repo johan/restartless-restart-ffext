@@ -38,10 +38,12 @@ const keyID = "RR:Restart";
 const fileMenuitemID = "menu_FileRestartItem";
 
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
+// pref defaults
 const PREFS = {
   get key() _("restart.ak", getPref("locale")),
   modifiers: "accel,alt",
-  locale: undefined
+  locale: undefined,
+  "disable_fastload": false
 };
 let PREF_OBSERVER = {
   observe: function(aSubject, aTopic, aData) {
@@ -52,7 +54,8 @@ let PREF_OBSERVER = {
           win.document.getElementById(keyID)
               .setAttribute("label", _("restart", getPref("locale")));
           break;
-        default:
+        case "key":
+        case "modifiers":
           win.document.getElementById(keyID)
               .setAttribute(aData, getPref(aData));
           break;
@@ -68,9 +71,18 @@ let logo = "";
     Services.scriptloader.loadSubScript(src, global)))(this);
 
 function getPref(aName) {
-  try {
-    return PREF_BRANCH.getComplexValue(aName, Ci.nsISupportsString).data;
-  } catch(e) {}
+  var pref = PREF_BRANCH;
+  var type = pref.getPrefType(aName);
+
+  // if the type is valid, then return the value
+  switch(type) {
+  case pref.PREF_STRING:
+    return pref.getComplexValue(aName, Ci.nsISupportsString).data;
+  case pref.PREF_BOOL:
+    return pref.getBoolPref(aName);
+  }
+
+  // return default
   return PREFS[aName];
 }
 
@@ -105,6 +117,10 @@ function restart() {
 
   if (canceled.data) return false; // somebody canceled our quit request
 
+  // disable fastload cache?
+  if (getPref("disable_fastload")) Services.appinfo.invalidateCachesOnRestart();
+
+  // restart
   Cc['@mozilla.org/toolkit/app-startup;1'].getService(Ci.nsIAppStartup)
       .quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
 
