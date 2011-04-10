@@ -30,7 +30,6 @@
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/AddonManager.jsm");
 
 const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 const keysetID = "restartless-restart-keyset";
@@ -174,9 +173,15 @@ function main(win) {
   }, win);
 }
 
+var addon = {
+  getResourceURI: function(filePath) ({
+    spec: __SCRIPT_URI_SPEC__ + "/../" + filePath
+  })
+}
+
 function install(){}
 function uninstall(){}
-function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
+function startup() {
   var prefs = PREF_BRANCH;
   include(addon.getResourceURI("includes/l10n.js").spec);
   include(addon.getResourceURI("includes/utils.js").spec);
@@ -189,5 +194,5 @@ function startup(data) AddonManager.getAddonByID(data.id, function(addon) {
   prefs = prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
   prefs.addObserver("", PREF_OBSERVER, false);
   unload(function() prefs.removeObserver("", PREF_OBSERVER));
-});
+};
 function shutdown(data, reason) { if (reason !== APP_SHUTDOWN) unload(); }
