@@ -35,19 +35,17 @@ const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 const keysetID = "restartless-restart-keyset";
 const keyID = "RR:Restart";
 const fileMenuitemID = "menu_FileRestartItem";
+var XUL_APP = {name: Services.appinfo.name};
 
 switch(Services.appinfo.name) {
 case "Thunderbird":
-  var XUL_APP_SPECIFIC = {
-    windowType: "mail:3pane",
-    baseKeyset: "mailKeys"
-  };
+  XUL_APP.winType = "mail:3pane";
+  XUL_APP.baseKeyset = "mailKeys";
   break;
+case "Fennec": break;
 default: //"Firefox", "SeaMonkey"
-  var XUL_APP_SPECIFIC = {
-    windowType: "navigator:browser",
-    baseKeyset: "mainKeyset"
-  };
+  XUL_APP.winType = "navigator:browser";
+  XUL_APP.baseKeyset = "mainKeyset";
 }
 
 const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
@@ -74,7 +72,7 @@ let PREF_OBSERVER = {
           break;
       }
       addMenuItem(win);
-    }, XUL_APP_SPECIFIC.windowType);
+    }, XUL_APP.winType);
   }
 }
 
@@ -154,7 +152,7 @@ function main(win) {
     restartKey.setAttribute("modifiers", getPref("modifiers"));
     restartKey.setAttribute("oncommand", "void(0);");
     restartKey.addEventListener("command", restart, true);
-    $(XUL_APP_SPECIFIC.baseKeyset).parentNode.appendChild(rrKeyset).appendChild(restartKey);
+    $(XUL_APP.baseKeyset).parentNode.appendChild(rrKeyset).appendChild(restartKey);
   }
 
   // add menu bar item to File menu
@@ -183,9 +181,23 @@ var addon = {
   })
 }
 
-function install(){}
+function disable(id) {
+  Cu.import("resource://gre/modules/AddonManager.jsm");
+  AddonManager.getAddonByID(id, function(addon) {
+    addon.userDisabled = true;
+  });
+}
+
+function install(data) {
+  if ("Fennec" == XUL_APP.name) disable(data.id);
+}
 function uninstall(){}
-function startup() {
+function startup(data, reason) {
+  if ("Fennec" == XUL_APP.name) {
+    if (ADDON_ENABLE == reason) restart();
+    disable(data.id);
+  }
+
   var prefs = PREF_BRANCH;
   include(addon.getResourceURI("includes/l10n.js").spec);
   include(addon.getResourceURI("includes/utils.js").spec);
@@ -194,7 +206,7 @@ function startup() {
   unload(l10n.unload);
 
   logo = addon.getResourceURI("images/refresh_16.png").spec;
-  watchWindows(main, XUL_APP_SPECIFIC.windowType);
+  watchWindows(main, XUL_APP.winType);
   prefs = prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
   prefs.addObserver("", PREF_OBSERVER, false);
   unload(function() prefs.removeObserver("", PREF_OBSERVER));
