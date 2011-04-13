@@ -54,25 +54,16 @@ const PREFS = {
   get key() _("restart.ak", getPref("locale")),
   modifiers: "accel,alt",
   locale: undefined,
-  "disable_fastload": false
+  "disable_fastload": false,
+  toolbar: null,
+  "toolbar.before": null
 };
+
+var prefChgHandlers = [];
 let PREF_OBSERVER = {
   observe: function(aSubject, aTopic, aData) {
     if ("nsPref:changed" != aTopic || !(aData in PREFS)) return;
-    runOnWindows(function(win) {
-      switch (aData) {
-        case "locale":
-          win.document.getElementById(keyID)
-              .setAttribute("label", _("restart", getPref("locale")));
-          break;
-        case "key":
-        case "modifiers":
-          win.document.getElementById(keyID)
-              .setAttribute(aData, getPref(aData));
-          break;
-      }
-      addMenuItem(win);
-    }, XUL_APP.winType);
+    prefChgHandlers.forEach(function(func) func && func(aData));
   }
 }
 
@@ -95,6 +86,18 @@ function getPref(aName) {
 
   // return default
   return PREFS[aName];
+}
+
+function setPref(aKey, aVal) {
+  aVal = ("wrapper-restartlessrestart-toolbarbutton" == aVal) ? "" : aVal;
+  switch (typeof(aVal)) {
+    case "string":
+      var ss = Cc["@mozilla.org/supports-string;1"]
+          .createInstance(Ci.nsISupportsString);
+      ss.data = aVal;
+      PREF_BRANCH.setComplexValue(aKey, Ci.nsISupportsString, ss);
+      break;
+  }
 }
 
 function addMenuItem(win) {
@@ -141,12 +144,13 @@ function restart() {
 function main(win) {
   let doc = win.document;
   function $(id) doc.getElementById(id);
+  function xul(type) doc.createElementNS(NS_XUL, type);
 
-  let rrKeyset = doc.createElementNS(NS_XUL, "keyset");
+  let rrKeyset = xul("keyset");
   rrKeyset.setAttribute("id", keysetID);
 
   // add hotkey
-  let (restartKey = doc.createElementNS(NS_XUL, "key")) {
+  let (restartKey = xul("key")) {
     restartKey.setAttribute("id", keyID);
     restartKey.setAttribute("key", getPref("key"));
     restartKey.setAttribute("modifiers", getPref("modifiers"));
@@ -169,9 +173,55 @@ function main(win) {
     appMenu.insertBefore(restartAMI, $("appmenu-quit"));
   }
 
+  // add toolbar button
+  let rrTBB = xul("toolbarbutton");
+  rrTBB.setAttribute("id", "restartlessrestart-toolbarbutton");
+  rrTBB.setAttribute("type", "button");
+  rrTBB.setAttribute("image", addon.getResourceURI("icon16.png").spec);
+  rrTBB.setAttribute("class", "toolbarbutton-1 chromeclass-toolbar-additional");
+  rrTBB.setAttribute("label", _("restart", getPref("locale")));
+  rrTBB.addEventListener("command", restart, true);
+  let tbID = getPref("toolbar");
+  ($("navigator-toolbox") || $("mail-toolbox")).palette.appendChild(rrTBB);
+  if (tbID) {
+    var tb = $(tbID);
+    if (tb)
+      tb.insertItem("restartlessrestart-toolbarbutton", $(getPref("toolbar.before")), null, false);
+  }
+
+  function saveTBNodeInfo(aEvt) {
+    if (rrTBB != aEvt.target) return;
+    rrTBB.setAttribute("label", _("restart", getPref("locale")));
+    setPref("toolbar", rrTBB.parentNode.getAttribute("id") || "");
+    setPref("toolbar.before", (rrTBB.nextSibling || "") && rrTBB.nextSibling.getAttribute("id"));
+  }
+  win.addEventListener("DOMNodeInserted", saveTBNodeInfo, false);
+  win.addEventListener("DOMNodeRemoved", saveTBNodeInfo, false);
+
+  var prefChgHanderIndex = prefChgHandlers.push(function(aData) {
+    switch (aData) {
+      case "locale":
+        let label = _("restart", getPref("locale"));
+        $(keyID).setAttribute("label", label);
+        rrTBB.setAttribute("label", label);
+        break;
+      case "key":
+      case "modifiers":
+        $(keyID).setAttribute(aData, getPref(aData));
+        break;
+    }
+    addMenuItem(win);
+  }) - 1;
+
   unload(function() {
     rrKeyset.parentNode.removeChild(rrKeyset);
     appMenu && appMenu.removeChild(restartAMI);
+    rrTBBB.parentNode.removeChild(rrTBB);
+    rrTBB.parentNode.removeChild(rrTBB);
+    saveTBNodeInfo();
+    win.removeEventListener("DOMNodeInserted", saveTBNodeInfo);
+    win.removeEventListener("DOMNodeRemoved", saveTBNodeInfo, false);
+    prefChgHandlers[prefChgHanderIndex] = null;
   }, win);
 }
 
@@ -211,4 +261,4 @@ function startup(data, reason) {
   prefs.addObserver("", PREF_OBSERVER, false);
   unload(function() prefs.removeObserver("", PREF_OBSERVER));
 };
-function shutdown(data, reason) { if (reason !== APP_SHUTDOWN) unload(); }
+function shutdown(data, reason) unload()
