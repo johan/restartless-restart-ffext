@@ -185,8 +185,22 @@ function main(win) {
   ($("navigator-toolbox") || $("mail-toolbox")).palette.appendChild(rrTBB);
   if (tbID) {
     var tb = $(tbID);
-    if (tb)
-      tb.insertItem("restartlessrestart-toolbarbutton", $(getPref("toolbar.before")), null, false);
+    if (tb) {
+      let b4ID = getPref("toolbar.before");
+      let b4 = $(b4ID);
+      if (!b4) { // fallback for issue 34
+        let currentset = tb.getAttribute("currentset").split(",");
+        let i = currentset.indexOf("restartlessrestart-toolbarbutton") + 1;
+        if (i > 0) {
+          let len = currentset.length;
+          for (; i < len; i++) {
+            b4 = $(currentset[i]);
+            if (b4) break;
+          }
+        }
+      }
+      tb.insertItem("restartlessrestart-toolbarbutton", b4, null, false);
+    }
   }
 
   function saveTBNodeInfo(aEvt) {
