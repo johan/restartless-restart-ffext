@@ -207,7 +207,8 @@ function main(win) {
     if (rrTBB != aEvt.target) return;
     rrTBB.setAttribute("label", _("restart", getPref("locale")));
     setPref("toolbar", rrTBB.parentNode.getAttribute("id") || "");
-    setPref("toolbar.before", (rrTBB.nextSibling || "") && rrTBB.nextSibling.getAttribute("id"));
+    setPref("toolbar.before", (rrTBB.nextSibling || "")
+        && rrTBB.nextSibling.getAttribute("id").replace(/^wrapper-/i, ""));
   }
   win.addEventListener("DOMNodeInserted", saveTBNodeInfo, false);
   win.addEventListener("DOMNodeRemoved", saveTBNodeInfo, false);
