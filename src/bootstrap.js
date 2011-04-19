@@ -204,7 +204,7 @@ function main(win) {
   }
 
   function saveTBNodeInfo(aEvt) {
-    if (rrTBB != aEvt.target) return;
+    if (aEvt && rrTBB != aEvt.target) return;
     rrTBB.setAttribute("label", _("restart", getPref("locale")));
     setPref("toolbar", rrTBB.parentNode.getAttribute("id") || "");
     setPref("toolbar.before", (rrTBB.nextSibling || "")
