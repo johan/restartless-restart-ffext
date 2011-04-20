@@ -72,8 +72,8 @@ var l10n = (function(global) {
 
       return getStr(localeBundle, aKey)
           || getStr(localeBasicBundle, aKey)
-          || (defaultBundle && (getStr(defaultBundle, aKey) || (defaultBundle = null)))
-          || (defaultBasicBundle && (getStr(defaultBasicBundle, aKey) || (defaultBasicBundle = null)))
+          || getStr(defaultBundle, aKey)
+          || getStr(defaultBasicBundle, aKey)
           || getStr(addonsDefaultBundle, aKey);
     }
   }
