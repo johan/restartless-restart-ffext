@@ -204,14 +204,11 @@ function main(win) {
   }
 
   function saveTBNodeInfo(aEvt) {
-    if (aEvt && rrTBB != aEvt.target) return;
-    rrTBB.setAttribute("label", _("restart", getPref("locale")));
     setPref("toolbar", rrTBB.parentNode.getAttribute("id") || "");
     setPref("toolbar.before", (rrTBB.nextSibling || "")
         && rrTBB.nextSibling.getAttribute("id").replace(/^wrapper-/i, ""));
   }
-  win.addEventListener("DOMNodeInserted", saveTBNodeInfo, false);
-  win.addEventListener("DOMNodeRemoved", saveTBNodeInfo, false);
+  win.addEventListener("aftercustomization", saveTBNodeInfo, false);
 
   var prefChgHanderIndex = prefChgHandlers.push(function(aData) {
     switch (aData) {
@@ -233,9 +230,7 @@ function main(win) {
     appMenu && appMenu.removeChild(restartAMI);
     rrTBBB.parentNode.removeChild(rrTBB);
     rrTBB.parentNode.removeChild(rrTBB);
-    saveTBNodeInfo();
-    win.removeEventListener("DOMNodeInserted", saveTBNodeInfo);
-    win.removeEventListener("DOMNodeRemoved", saveTBNodeInfo, false);
+    win.removeEventListener("aftercustomization", saveTBNodeInfo);
     prefChgHandlers[prefChgHanderIndex] = null;
   }, win);
 }
