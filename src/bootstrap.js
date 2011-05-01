@@ -25,6 +25,7 @@
  *   Erik Vold <erikvvold@gmail.com> (Original Author)
  *   Greg Parris <greg.parris@gmail.com>
  *   Nils Maier <maierman@web.de>
+ *   Szabolcs Hubai <szab.hu@gmail.com>
  *
  * ***** END LICENSE BLOCK ***** */
 
