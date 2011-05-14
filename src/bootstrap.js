@@ -113,9 +113,11 @@ function addMenuItem(win) {
   // add the new menuitem to File menu
   let (restartMI = win.document.createElementNS(NS_XUL, "menuitem")) {
     restartMI.setAttribute("id", fileMenuitemID);
+    restartMI.setAttribute("class", "menuitem-iconic");
     restartMI.setAttribute("label", _("restart", getPref("locale")));
     restartMI.setAttribute("accesskey", "R");
     restartMI.setAttribute("key", keyID);
+    restartMI.style.listStyleImage = "url('" + logo + "')";
     restartMI.addEventListener("command", restart, true);
 
     $("menu_FilePopup").insertBefore(restartMI, $("menu_FileQuitItem"));
