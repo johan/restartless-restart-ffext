@@ -6,6 +6,7 @@
   <setting pref="extensions.restartless-restart.modifiers" type="string" title="Hotkey modifiers">
     Default is "accel,alt"
   </setting>
+  <setting pref="extensions.restartless-restart.locale" type="string" title="Locale"/>
   <setting pref="extensions.restartless-restart.disable_fastload" type="bool" title="Disable Fastload">
     This will invalidate caches on the next restart, so all fast load data to be re-created.
   </setting>
