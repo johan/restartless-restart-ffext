@@ -10,6 +10,7 @@
     <type>2</type>
     <homepageURL>http://github.com/erikvold/restartless-restart-ffext</homepageURL>
     <description>Fennec users enable to restart, otherwise a File -> Restart menu item will be added.</description>
+    <optionsType>2</optionsType>
 
     <contributor>Greg Parris; http://phob.net/</contributor>
     <contributor>Nils Maier; https://tn123.org/</contributor>

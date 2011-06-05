@@ -49,15 +49,15 @@ default: //"Firefox", "SeaMonkey"
   XUL_APP.baseKeyset = "mainKeyset";
 }
 
-const PREF_BRANCH = Services.prefs.getBranch("extensions.restartless-restart.");
-// pref defaults
+const PREF_BRANCH = "extensions.restartless-restart.";
 const PREFS = {
-  get key() _("restart.ak", getPref("locale")),
   modifiers: "accel,alt",
-  locale: undefined,
+  locale: Cc["@mozilla.org/chrome/chrome-registry;1"]
+      .getService(Ci.nsIXULChromeRegistry).getSelectedLocale("global"),
   "disable_fastload": false,
-  toolbar: null,
-  "toolbar.before": null
+  toolbar: "",
+  "toolbar.before": "",
+  get key() _("restart.ak", getPref("locale"))
 };
 
 var prefChgHandlers = [];
@@ -73,22 +73,6 @@ let logo = "";
 (function(global) global.include = function include(src) (
     Services.scriptloader.loadSubScript(src, global)))(this);
 
-function getPref(aName) {
-  var pref = PREF_BRANCH;
-  var type = pref.getPrefType(aName);
-
-  // if the type is valid, then return the value
-  switch(type) {
-  case pref.PREF_STRING:
-    return pref.getComplexValue(aName, Ci.nsISupportsString).data;
-  case pref.PREF_BOOL:
-    return pref.getBoolPref(aName);
-  }
-
-  // return default
-  return PREFS[aName];
-}
-
 function setPref(aKey, aVal) {
   aVal = ("wrapper-restartlessrestart-toolbarbutton" == aVal) ? "" : aVal;
   switch (typeof(aVal)) {
@@ -96,7 +80,8 @@ function setPref(aKey, aVal) {
       var ss = Cc["@mozilla.org/supports-string;1"]
           .createInstance(Ci.nsISupportsString);
       ss.data = aVal;
-      PREF_BRANCH.setComplexValue(aKey, Ci.nsISupportsString, ss);
+      Services.prefs.getBranch(PREF_BRANCH)
+          .setComplexValue(aKey, Ci.nsISupportsString, ss);
       break;
   }
 }
@@ -261,12 +246,19 @@ function startup(data, reason) {
     disable(data.id);
   }
 
-  var prefs = PREF_BRANCH;
-  include(addon.getResourceURI("includes/l10n.js").spec);
+  var prefs = Services.prefs.getBranch(PREF_BRANCH);
+
+  // include utils
   include(addon.getResourceURI("includes/utils.js").spec);
 
+  // init l10n
+  include(addon.getResourceURI("includes/l10n.js").spec);
   l10n(addon, "rr.properties");
   unload(l10n.unload);
+
+  // init prefs
+  include(addon.getResourceURI("includes/prefs.js").spec);
+  setDefaultPrefs();
 
   logo = addon.getResourceURI("images/refresh_16.png").spec;
   watchWindows(main, XUL_APP.winType);
