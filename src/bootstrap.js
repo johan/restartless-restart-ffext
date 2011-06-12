@@ -198,7 +198,7 @@ function main(win) {
   }
   win.addEventListener("aftercustomization", saveTBNodeInfo, false);
 
-  var prefChgHanderIndex = prefChgHandlers.push(function(aData) {
+  var prefChgHandlerIndex = prefChgHandlers.push(function(aData) {
     switch (aData) {
       case "locale":
         let label = _("restart", getPref("locale"));
@@ -219,7 +219,7 @@ function main(win) {
     rrTBBB.parentNode.removeChild(rrTBB);
     rrTBB.parentNode.removeChild(rrTBB);
     win.removeEventListener("aftercustomization", saveTBNodeInfo);
-    prefChgHandlers[prefChgHanderIndex] = null;
+    prefChgHandlers[prefChgHandlerIndex] = null;
   }, win);
 }
 
