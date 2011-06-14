@@ -70,8 +70,25 @@ let PREF_OBSERVER = {
 
 let logo = "";
 
-(function(global) global.include = function include(src) (
-    Services.scriptloader.loadSubScript(src, global)))(this);
+
+/* Includes a javascript file with loadSubScript
+*
+* @param src (String)
+* The url of a javascript file to include.
+*/
+(function(global) global.include = function include(src) {
+  var o = {};
+  Components.utils.import("resource://gre/modules/Services.jsm", o);
+  var uri = o.Services.io.newURI(
+      src, null, o.Services.io.newURI(__SCRIPT_URI_SPEC__, null, null));
+  o.Services.scriptloader.loadSubScript(uri.spec, global);
+})(this);
+
+
+include("includes/utils.js");
+include("includes/l10n.js");
+include("includes/prefs.js");
+
 
 function setPref(aKey, aVal) {
   aVal = ("wrapper-restartlessrestart-toolbarbutton" == aVal) ? "" : aVal;
@@ -248,16 +265,11 @@ function startup(data, reason) {
 
   var prefs = Services.prefs.getBranch(PREF_BRANCH);
 
-  // include utils
-  include(addon.getResourceURI("includes/utils.js").spec);
-
-  // init l10n
-  include(addon.getResourceURI("includes/l10n.js").spec);
+  // setup l10n
   l10n(addon, "rr.properties");
   unload(l10n.unload);
 
-  // init prefs
-  include(addon.getResourceURI("includes/prefs.js").spec);
+  // setup prefs
   setDefaultPrefs();
 
   logo = addon.getResourceURI("images/refresh_16.png").spec;
