@@ -89,25 +89,29 @@ let logo = "";
  * @param src (String)
  * The url of a javascript file.
  */
-(function(global) global.require = function require(src) {
-  var scope = {require: global.require, exports: {}};
-  var tools = {};
-  Components.utils.import("resource://gre/modules/Services.jsm", tools);
-  var baseURI = tools.Services.io.newURI(__SCRIPT_URI_SPEC__, null, null);
-  try {
-    var uri = tools.Services.io.newURI(
-        "packages/" + src + ".js", null, baseURI);
-    tools.Services.scriptloader.loadSubScript(uri.spec, scope);
-  } catch (e) {
-    var uri = tools.Services.io.newURI(src, null, baseURI);
-    tools.Services.scriptloader.loadSubScript(uri.spec, scope);
+(function(global) {
+  var modules = {};
+  global.require = function require(src) {
+    if (modules[src]) return modules[src];
+    var scope = {require: global.require, exports: {}};
+    var tools = {};
+    Components.utils.import("resource://gre/modules/Services.jsm", tools);
+    var baseURI = tools.Services.io.newURI(__SCRIPT_URI_SPEC__, null, null);
+    try {
+      var uri = tools.Services.io.newURI(
+          "packages/" + src + ".js", null, baseURI);
+      tools.Services.scriptloader.loadSubScript(uri.spec, scope);
+    } catch (e) {
+      var uri = tools.Services.io.newURI(src, null, baseURI);
+      tools.Services.scriptloader.loadSubScript(uri.spec, scope);
+    }
+    return modules[src] = scope.exports;
   }
-  return scope.exports;
 })(this);
 
 
 var {unload} = require("unload");
-include("includes/utils.js");
+var {runOnLoad, runOnWindows, watchWindows} = require("window-utils");
 include("includes/l10n.js");
 include("includes/prefs.js");
 
