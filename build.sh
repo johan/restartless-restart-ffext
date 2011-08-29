@@ -9,7 +9,7 @@ cd src
 rm -rf build
 mkdir build
 cp -r \
-  bootstrap.js images includes locale install.rdf icon.png icon16.png icon64.png options.xul \
+  bootstrap.js images includes packages locale install.rdf icon.png icon16.png icon64.png options.xul \
   build/
 cd build
 
