@@ -259,7 +259,6 @@ function main(win) {
   unload(function() {
     rrKeyset.parentNode.removeChild(rrKeyset);
     appMenu && appMenu.removeChild(restartAMI);
-    rrTBBB.parentNode.removeChild(rrTBB);
     rrTBB.parentNode.removeChild(rrTBB);
     win.removeEventListener("aftercustomization", saveTBNodeInfo);
     prefChgHandlers[prefChgHandlerIndex] = null;
