@@ -5,4 +5,5 @@
 .settings
 *.xpi
 build
+*.komodoproject
 
