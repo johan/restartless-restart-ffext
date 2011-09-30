@@ -37,10 +37,17 @@
 /**
  * Get the preference value of type specified in PREFS
  */
-function getPref(key) {
+
+function getPref(key, aDefault) {
   // Cache the prefbranch after first use
   if (getPref.branch == null)
     getPref.branch = Services.prefs.getBranch(PREF_BRANCH);
+
+  var prefType = getPref.branch.getPrefType(key);
+
+  // underlying preferences object throws an exception if pref doesn't exist
+  if (prefType == getPref.branch.PREF_INVALID)
+    return aDefault;
 
   // Figure out what type of pref to fetch
   switch (typeof PREFS[key]) {
