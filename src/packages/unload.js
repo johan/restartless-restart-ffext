@@ -67,12 +67,13 @@ exports.unload = function unload(callback, container) {
   // The callback is bound to the lifetime of the container if we have one
   if (container != null) {
     // Remove the unloader when the container unloads
-    container.addEventListener("unload", removeUnloader, false);
+    container.addEventListener("unload", unloader, false);
 
     // Wrap the callback to additionally remove the unload listener
     let origCallback = callback;
     callback = function() {
-      container.removeEventListener("unload", removeUnloader, false);
+      container.removeEventListener("unload", unloader, false);
+      removeUnloader();
       origCallback();
     }
   }
