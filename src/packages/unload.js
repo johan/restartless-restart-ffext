@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Edward Lee <edilee@mozilla.com>
  *   Erik Vold <erikvvold@gmail.com>
+ *   Michael Kraft <morac99-firefox2@yahoo.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
