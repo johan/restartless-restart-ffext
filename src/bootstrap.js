@@ -208,7 +208,7 @@ function main(win) {
   let rrTBB = xul("toolbarbutton");
   rrTBB.setAttribute("id", "restartlessrestart-toolbarbutton");
   rrTBB.setAttribute("type", "button");
-  rrTBB.setAttribute("image", addon.getResourceURI("icon16.png").spec);
+  rrTBB.setAttribute("image", addon.getResourceURI("icon.png").spec);
   rrTBB.setAttribute("class", "toolbarbutton-1 chromeclass-toolbar-additional");
   rrTBB.setAttribute("label", _("restart", getPref("locale")));
   rrTBB.addEventListener("command", restart, true);
