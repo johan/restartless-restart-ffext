@@ -57,7 +57,7 @@ const PREFS = {
   "disable_fastload": false,
   toolbar: "",
   "toolbar.before": "",
-  get key() _("restart.ak", getPref("locale"))
+  get key() _("restart.key", getPref("locale"))
 };
 
 var prefChgHandlers = [];
@@ -143,7 +143,7 @@ function addMenuItem(win) {
     restartMI.setAttribute("id", fileMenuitemID);
     restartMI.setAttribute("class", "menuitem-iconic");
     restartMI.setAttribute("label", _("restart", getPref("locale")));
-    restartMI.setAttribute("accesskey", "R");
+    restartMI.setAttribute("accesskey", _("restart.accesskey", getPref("locale")));
     restartMI.setAttribute("key", keyID);
     restartMI.style.listStyleImage = "url('" + logo + "')";
     restartMI.addEventListener("command", restart, true);
