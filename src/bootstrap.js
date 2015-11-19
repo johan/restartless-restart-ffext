@@ -139,7 +139,8 @@ function addMenuItem(win) {
   removeMI();
 
   // add the new menuitem to File menu
-  let (restartMI = win.document.createElementNS(NS_XUL, "menuitem")) {
+  let restartMI = win.document.createElementNS(NS_XUL, "menuitem");
+  if (restartMI) {
     restartMI.setAttribute("id", fileMenuitemID);
     restartMI.setAttribute("class", "menuitem-iconic");
     restartMI.setAttribute("label", _("restart", getPref("locale")));
@@ -181,7 +182,8 @@ function main(win) {
   rrKeyset.setAttribute("id", keysetID);
 
   // add hotkey
-  let (restartKey = xul("key")) {
+  let restartKey = xul("key");
+  if (restartKey) {
     restartKey.setAttribute("id", keyID);
     restartKey.setAttribute("key", getPref("key"));
     restartKey.setAttribute("modifiers", getPref("modifiers"));
