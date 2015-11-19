@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<r:RDF xmlns="http://www.mozilla.org/2004/em-rdf#"
+       xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <r:Description about="urn:mozilla:install-manifest">
+    <creator>Erik Vold</creator>
+    <id>restartless.restart@erikvold.com</id>
+    <name>Restartless Restart</name>
+    <version>10</version>
+    <bootstrap>true</bootstrap>
+    <type>2</type>
+    <homepageURL>http://github.com/erikvold/restartless-restart-ffext</homepageURL>
+    <description>Fennec users enable to restart, otherwise a File -> Restart menu item will be added.</description>
+    <optionsType>2</optionsType>
+
+    <contributor>Greg Parris; http://phob.net/</contributor>
+    <contributor>Nils Maier; https://tn123.org/</contributor>
+    <contributor>Szabolcs Hubai</contributor>
+    <contributor>Markus Brandt</contributor>
+
+    <translator>Mikael Hiort af Ornäs</translator>
+    <translator>Onno Ekker</translator>
+
+    <!-- Firefox -->
+    <targetApplication>
+      <r:Description>
+        <id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
+        <minVersion>4.0b4</minVersion>
+        <maxVersion>10.0a1</maxVersion>
+      </r:Description>
+    </targetApplication>
+    <!-- SeaMonkey -->
+    <targetApplication>
+      <r:Description>
+        <id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</id>
+        <minVersion>2.1a3</minVersion>
+        <maxVersion>2.7a1</maxVersion>
+      </r:Description>
+    </targetApplication>
+    <!-- Fennec -->
+    <targetApplication>
+      <r:Description>
+        <id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</id>
+        <minVersion>4.0b4</minVersion>
+        <maxVersion>10.0a1</maxVersion>
+      </r:Description>
+    </targetApplication>
+    <!-- Thunderbird -->
+    <targetApplication>
+      <r:Description>
+        <id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</id>
+        <minVersion>3.3a1</minVersion>
+        <maxVersion>10.0a1</maxVersion>
+      </r:Description>
+    </targetApplication>
+  </r:Description>
+</r:RDF>

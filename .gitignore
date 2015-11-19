@@ -4,4 +4,6 @@
 .project
 .settings
 *.xpi
+build
+*.komodoproject
 
